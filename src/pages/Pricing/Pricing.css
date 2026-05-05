@@ -1,0 +1,124 @@
+/* Pricing Page Specific Styles */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  align-items: stretch;
+}
+.pricing-card {
+  background-color: var(--white);
+  border-radius: var(--radius-md);
+  padding: 40px 30px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.pricing-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+.pricing-card.popular {
+  border: 2px solid var(--gold);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+  z-index: 1;
+}
+.pricing-card.popular:hover {
+  transform: scale(1.05) translateY(-8px);
+}
+.popular-badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--gold);
+  color: var(--white);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.pricing-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--border);
+}
+.pricing-header h3 {
+  font-size: 24px;
+  color: var(--blue-dark);
+  margin-bottom: 16px;
+}
+.price {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  color: var(--blue);
+}
+.currency {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 8px;
+  margin-right: 4px;
+}
+.amount {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+}
+.pricing-features {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 40px;
+  flex-grow: 1;
+}
+.pricing-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.pricing-features li svg {
+  color: var(--gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.pricing-card .btn {
+  width: 100%;
+}
+.pricing-note {
+  text-align: center;
+  margin-top: 40px;
+  color: var(--text-light);
+  font-size: 16px;
+}
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: var(--white);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border);
+}
+.empty-state h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+@media (max-width: 992px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  .pricing-card.popular {
+    transform: none;
+  }
+  .pricing-card.popular:hover {
+    transform: translateY(-8px);
+  }
+}

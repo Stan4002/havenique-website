@@ -1,0 +1,103 @@
+.accessibility-wrapper {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+.accessibility-toggle {
+  background-color: var(--blue);
+  color: var(--white);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+}
+.accessibility-toggle:hover {
+  background-color: var(--blue-light);
+  transform: scale(1.05);
+}
+.accessibility-panel {
+  position: absolute;
+  top: 54px;
+  right: 0;
+  background-color: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding: 16px;
+  width: 250px;
+  border: 1px solid var(--border);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: var(--transition);
+}
+.accessibility-panel.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.accessibility-panel h4 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: var(--blue-dark);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+.accessibility-section {
+  margin-bottom: 16px;
+}
+.accessibility-section:last-child {
+  margin-bottom: 0;
+}
+.accessibility-label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.font-size-controls {
+  display: flex;
+  gap: 8px;
+}
+.font-btn {
+  flex: 1;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 0;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  transition: var(--transition);
+}
+.font-btn:hover, .font-btn.active {
+  background-color: var(--blue);
+  color: var(--white);
+  border-color: var(--blue);
+}
+.contrast-btn {
+  width: 100%;
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text);
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.contrast-btn:hover, .contrast-btn.active {
+  background-color: var(--blue-dark);
+  color: var(--white);
+  border-color: var(--blue-dark);
+}

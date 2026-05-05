@@ -1,0 +1,75 @@
+/* FAQ Page Specific Styles */
+.faq-layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 60px;
+  align-items: start;
+}
+.faq-intro h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: var(--blue-dark);
+}
+.faq-intro p {
+  font-size: 18px;
+  color: var(--text-light);
+  margin-bottom: 30px;
+}
+.faq-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.faq-item {
+  background-color: var(--white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.faq-question {
+  width: 100%;
+  text-align: left;
+  padding: 24px;
+  background: none;
+  border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--blue-dark);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.faq-question:hover {
+  color: var(--blue);
+}
+.faq-icon {
+  color: var(--gold);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+.faq-item.open .faq-icon {
+  transform: rotate(180deg);
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}
+.faq-item.open .faq-answer {
+  max-height: 500px; /* Arbitrary large number to allow content to expand */
+}
+.faq-answer-inner {
+  padding: 0 24px 24px;
+  color: var(--text);
+  line-height: 1.6;
+}
+@media (max-width: 992px) {
+  .faq-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
