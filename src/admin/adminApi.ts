@@ -163,11 +163,11 @@ const fallbackBlogPosts = [
 // --- API Service ---
 export const adminApi = {
   login: async (credentials: any) => {
-    try {
-      return await authFetch(`${API_BASE}/admin/login`, {
-        method: 'POST',
-        body: JSON.stringify(credentials)
-      });
+  return await authFetch(`${API_BASE}/admin/auth/login`, {
+    method: 'POST',
+    body: JSON.stringify(credentials)
+  });
+},
     } catch (e) {
       // Mock successful login for demo
       if (
