@@ -76,8 +76,8 @@ export function Settings() {
           <div className="admin-form-group">
             <label className="admin-label">Primary Phone</label>
             <input
-              name="phone"
-              value={settings.phone || ''}
+              name="phone_primary"
+              value={settings.phone_primary || ''}
               onChange={handleChange}
               className="admin-input" />
             
@@ -85,8 +85,8 @@ export function Settings() {
           <div className="admin-form-group">
             <label className="admin-label">Secondary Phone</label>
             <input
-              name="phone2"
-              value={settings.phone2 || ''}
+              name="phone_secondary"
+              value={settings.phone_secondary || ''}
               onChange={handleChange}
               className="admin-input" />
             

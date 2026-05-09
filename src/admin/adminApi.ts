@@ -69,7 +69,7 @@ const fallbackServices = [
     description: 'Professional care and dressing of surgical, acute, and chronic wounds.',
     icon: 'Bandage',
     visible: true,
-    order: 1
+    order_index: 1
   },
   {
     id: 2,
@@ -77,7 +77,7 @@ const fallbackServices = [
     description: 'Insertion, maintenance, and removal of urinary catheters with strict hygiene.',
     icon: 'Activity',
     visible: true,
-    order: 2
+    order_index: 2
   }
 ];
 
@@ -86,53 +86,54 @@ const fallbackStaff = [
     id: 1,
     name: 'Womba Kampewu',
     role: 'CEO',
-    tags: ['Leadership', 'Management'],
+    title: 'CEO',
+    specialties: ['Leadership', 'Management'],
     bio: 'Womba Kampewu leads Havenique with a vision to transform home-based healthcare in Zambia.',
     qualifications: ['BSc Business Administration'],
     visible: true,
-    order: 1,
-    isFounder: true
+    order_index: 1,
+    is_founder: true,
+    photo_url: ''
   },
   {
     id: 2,
     name: 'Queen Blessing Kampewu',
     role: 'Vice CEO / Registered Nurse',
-    tags: ['RN', 'HIV Nurse Practitioner'],
+    title: 'Vice CEO / Registered Nurse',
+    specialties: ['RN', 'HIV Nurse Practitioner'],
     bio: 'Queen Blessing is a highly experienced Registered Nurse and HIV Nurse Practitioner.',
     qualifications: ['BSc Nursing', 'Registered Nurse (GNC)', 'Certified HIV Nurse Practitioner'],
     visible: true,
-    order: 2,
-    isFounder: true
+    order_index: 2,
+    is_founder: true,
+    photo_url: ''
   }
 ];
 
 const fallbackTestimonials = [
   {
     id: 1,
-    name: 'Sarah M.',
+    client_name: 'Sarah M.',
     location: 'Kabulonga',
     rating: 5,
-    quote: 'The nurses from Havenique were incredibly professional...',
-    status: 'approved',
-    date: '2026-09-15'
+    review: 'The nurses from Havenique were incredibly professional...',
+    approved: true
   },
   {
     id: 2,
-    name: 'David K.',
+    client_name: 'David K.',
     location: 'Woodlands',
     rating: 5,
-    quote: 'Having 24/7 access to such qualified professionals...',
-    status: 'approved',
-    date: '2026-09-20'
+    review: 'Having 24/7 access to such qualified professionals...',
+    approved: true
   },
   {
     id: 3,
-    name: 'Anonymous',
+    client_name: 'Anonymous',
     location: 'Roma',
     rating: 4,
-    quote: 'Good service but arrived a bit late.',
-    status: 'pending',
-    date: '2026-04-15'
+    review: 'Good service but arrived a bit late.',
+    approved: false
   }
 ];
 
@@ -143,8 +144,11 @@ const fallbackBlogPosts = [
     title: 'The Benefits of Home-Based Nursing Care',
     category: 'Healthcare',
     excerpt: 'Discover why more families are choosing home-based care...',
-    date: '2026-01-12',
-    status: 'published'
+    published_at: '2026-01-12',
+    published: true,
+    author: 'admin',
+    content: '',
+    image_url: ''
   },
   {
     id: 2,
@@ -152,8 +156,11 @@ const fallbackBlogPosts = [
     title: 'Managing Diabetes Effectively at Home',
     category: 'Wellness',
     excerpt: 'Practical tips for monitoring blood sugar...',
-    date: '2026-02-25',
-    status: 'draft'
+    published_at: null,
+    published: false,
+    author: 'admin',
+    content: '',
+    image_url: ''
   }
 ];
 

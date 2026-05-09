@@ -14,8 +14,10 @@ export function BlogEditor() {
     category: '',
     excerpt: '',
     content: '',
-    status: 'draft',
-    date: new Date().toISOString().split('T')[0]
+    published: false,
+    published_at: new Date().toISOString().split('T')[0],
+    author: 'admin',
+    image_url: ''
   });
   const [loading, setLoading] = useState(!isNew);
   useEffect(() => {
@@ -49,10 +51,17 @@ export function BlogEditor() {
       return updates;
     });
   };
-  const handleSave = async (status: 'published' | 'draft') => {
+  const handleSave = async (publishStatus: boolean) => {
     const finalPost = {
-      ...post,
-      status
+      title: post.title,
+      slug: post.slug,
+      category: post.category,
+      excerpt: post.excerpt,
+      content: post.content,
+      published: publishStatus,
+      published_at: publishStatus ? (post.published_at || new Date().toISOString().split('T')[0]) : null,
+      author: post.author || 'admin',
+      image_url: post.image_url || ''
     };
     try {
       if (isNew) {
@@ -63,7 +72,7 @@ export function BlogEditor() {
         await adminApi.updateBlogPost(post.id, finalPost);
       }
       alert(
-        `Post ${status === 'published' ? 'published' : 'saved as draft'} successfully!`
+        `Post ${publishStatus ? 'published' : 'saved as draft'} successfully!`
       );
       navigate('/admin/blog');
     } catch (e: any) {
@@ -96,13 +105,13 @@ export function BlogEditor() {
             }}>
             
             <button
-              onClick={() => handleSave('draft')}
+              onClick={() => handleSave(false)}
               className="admin-btn admin-btn-secondary">
               
               Save Draft
             </button>
             <button
-              onClick={() => handleSave('published')}
+              onClick={() => handleSave(true)}
               className="admin-btn admin-btn-primary">
               
               <Save size={16} /> Publish
@@ -164,14 +173,14 @@ export function BlogEditor() {
             <div className="admin-form-group">
               <label className="admin-label">Status</label>
               <div
-                className={`admin-status ${post.status === 'published' ? 'admin-status-success' : 'admin-status-neutral'}`}
+                className={`admin-status ${post.published ? 'admin-status-success' : 'admin-status-neutral'}`}
                 style={{
                   display: 'block',
                   textAlign: 'center',
                   padding: '8px'
                 }}>
                 
-                {post.status === 'published' ? 'Published' : 'Draft'}
+                {post.published ? 'Published' : 'Draft'}
               </div>
             </div>
 
@@ -200,8 +209,8 @@ export function BlogEditor() {
               <label className="admin-label">Publish Date</label>
               <input
                 type="date"
-                name="date"
-                value={post.date}
+                name="published_at"
+                value={post.published_at || ''}
                 onChange={handleChange}
                 className="admin-input" />
               

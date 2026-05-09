@@ -10,7 +10,7 @@ export function ServicesAdmin() {
   const fetchServices = async () => {
     setLoading(true);
     const data = await adminApi.getServices();
-    setServices(data.sort((a: any, b: any) => (a.order || 0) - (b.order || 0)));
+    setServices(data.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0)));
     setLoading(false);
   };
   useEffect(() => {
@@ -28,7 +28,7 @@ export function ServicesAdmin() {
       description: '',
       icon: 'HeartPulse',
       visible: true,
-      order: services.length + 1
+      order_index: services.length + 1
     });
     setIsModalOpen(true);
   };
@@ -63,7 +63,7 @@ export function ServicesAdmin() {
   };
   const columns = [
   {
-    key: 'order',
+    key: 'order_index',
     label: 'Order'
   },
   {

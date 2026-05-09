@@ -22,16 +22,22 @@ export function PricingAdmin() {
   };
   const handleAdd = () => {
     setEditingPlan({
+      plan_name: '',
       name: '',
       price: '',
+      currency: 'ZMW',
+      description: '',
       featuresStr: '',
+      is_popular: false,
       isPopular: false,
-      visible: true
+      visible: true,
+      order_index: plans.length + 1
     });
     setIsModalOpen(true);
   };
   const handleDelete = async (plan: any) => {
-    if (window.confirm(`Delete plan "${plan.name}"?`)) {
+    const planName = plan.plan_name || plan.name;
+    if (window.confirm(`Delete plan "${planName}"?`)) {
       try {
         await adminApi.deletePricing(plan.id);
         setPlans(plans.filter((p) => p.id !== plan.id));
@@ -43,21 +49,26 @@ export function PricingAdmin() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const processedPlan = {
-      ...editingPlan,
+      plan_name: editingPlan.plan_name || editingPlan.name || '',
+      price: parseFloat(editingPlan.price) || 0,
+      currency: editingPlan.currency || 'ZMW',
+      description: editingPlan.description || '',
       features: editingPlan.featuresStr ?
       editingPlan.featuresStr.
       split('\n').
       map((f: string) => f.trim()).
       filter(Boolean) :
-      []
+      [],
+      is_popular: editingPlan.is_popular || editingPlan.isPopular || false,
+      visible: editingPlan.visible !== undefined ? editingPlan.visible : true,
+      order_index: editingPlan.order_index || 0
     };
-    delete processedPlan.featuresStr;
     try {
-      if (processedPlan.id) {
+      if (editingPlan.id) {
         // Update existing
-        const updated = await adminApi.updatePricing(processedPlan.id, processedPlan);
+        const updated = await adminApi.updatePricing(editingPlan.id, processedPlan);
         setPlans(
-          plans.map((p) => p.id === processedPlan.id ? updated : p)
+          plans.map((p) => p.id === editingPlan.id ? updated : p)
         );
       } else {
         // Create new
@@ -71,7 +82,7 @@ export function PricingAdmin() {
   };
   const columns = [
   {
-    key: 'name',
+    key: 'plan_name',
     label: 'Plan Name'
   },
   {
@@ -79,7 +90,7 @@ export function PricingAdmin() {
     label: 'Price (ZMW)'
   },
   {
-    key: 'isPopular',
+    key: 'is_popular',
     label: 'Popular',
     render: (val: boolean) =>
     val ?
@@ -129,10 +140,11 @@ export function PricingAdmin() {
                     <input
                     required
                     className="admin-input"
-                    value={editingPlan.name}
+                    value={editingPlan.plan_name || editingPlan.name || ''}
                     onChange={(e) =>
                     setEditingPlan({
                       ...editingPlan,
+                      plan_name: e.target.value,
                       name: e.target.value
                     })
                     } />
@@ -143,11 +155,12 @@ export function PricingAdmin() {
                     <input
                     required
                     className="admin-input"
+                    type="number"
                     value={editingPlan.price}
                     onChange={(e) =>
                     setEditingPlan({
                       ...editingPlan,
-                      price: e.target.value
+                      price: parseFloat(e.target.value)
                     })
                     } />
                   
@@ -189,10 +202,11 @@ export function PricingAdmin() {
                   
                     <input
                     type="checkbox"
-                    checked={editingPlan.isPopular}
+                    checked={editingPlan.is_popular || editingPlan.isPopular || false}
                     onChange={(e) =>
                     setEditingPlan({
                       ...editingPlan,
+                      is_popular: e.target.checked,
                       isPopular: e.target.checked
                     })
                     } />

@@ -11,20 +11,20 @@ export function TestimonialsAdmin() {
       setLoading(false);
     });
   }, []);
-  const handleStatusChange = async (id: number, newStatus: string) => {
+  const handleStatusChange = async (id: number, newApproved: boolean) => {
     try {
       const updatedTestimonial = testimonials.find((t) => t.id === id);
       if (!updatedTestimonial) return;
       await adminApi.updateTestimonial(id.toString(), {
         ...updatedTestimonial,
-        status: newStatus
+        approved: newApproved
       });
       setTestimonials(
         testimonials.map((t) =>
         t.id === id ?
         {
           ...t,
-          status: newStatus
+          approved: newApproved
         } :
         t
         )
@@ -44,7 +44,7 @@ export function TestimonialsAdmin() {
     }
   };
   const filteredTestimonials = testimonials.filter(
-    (t) => t.status === activeTab
+    (t) => activeTab === 'approved' ? t.approved : !t.approved
   );
   return (
     <div className="admin-card">
@@ -68,14 +68,14 @@ export function TestimonialsAdmin() {
             onClick={() => setActiveTab('pending')}>
             
             Pending Review (
-            {testimonials.filter((t) => t.status === 'pending').length})
+            {testimonials.filter((t) => !t.approved).length})
           </button>
           <button
             className={`admin-btn ${activeTab === 'approved' ? 'admin-btn-primary' : 'admin-btn-secondary'}`}
             onClick={() => setActiveTab('approved')}>
             
             Approved (
-            {testimonials.filter((t) => t.status === 'approved').length})
+            {testimonials.filter((t) => t.approved).length})
           </button>
         </div>
       </div>
@@ -128,7 +128,7 @@ export function TestimonialsAdmin() {
                   fontSize: '16px'
                 }}>
                 
-                      {t.name}
+                      {t.client_name || t.name}
                     </strong>
                     <span
                 style={{
@@ -152,16 +152,8 @@ export function TestimonialsAdmin() {
                 fontStyle: 'italic'
               }}>
               
-                    "{t.quote}"
+                    "{t.review || t.quote}"
                   </p>
-                  <div
-              style={{
-                fontSize: '12px',
-                color: 'var(--admin-text-light)'
-              }}>
-              
-                    Submitted: {t.date}
-                  </div>
                 </div>
 
                 <div
@@ -171,9 +163,9 @@ export function TestimonialsAdmin() {
               flexShrink: 0
             }}>
             
-                  {activeTab === 'pending' ?
+                  {!t.approved ?
             <button
-              onClick={() => handleStatusChange(t.id, 'approved')}
+              onClick={() => handleStatusChange(t.id, true)}
               className="admin-btn admin-btn-success admin-btn-sm"
               title="Approve">
               
@@ -181,7 +173,7 @@ export function TestimonialsAdmin() {
                     </button> :
 
             <button
-              onClick={() => handleStatusChange(t.id, 'pending')}
+              onClick={() => handleStatusChange(t.id, false)}
               className="admin-btn admin-btn-secondary admin-btn-sm"
               title="Unapprove">
               
