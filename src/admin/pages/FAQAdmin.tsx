@@ -28,25 +28,32 @@ export function FAQAdmin() {
     });
     setIsModalOpen(true);
   };
-  const handleDelete = (faq: any) => {
+  const handleDelete = async (faq: any) => {
     if (window.confirm(`Delete FAQ?`)) {
-      setFaqs(faqs.filter((f) => f.id !== faq.id));
+      try {
+        await adminApi.deleteFaq(faq.id);
+        setFaqs(faqs.filter((f) => f.id !== faq.id));
+      } catch (e) {
+        alert('Failed to delete FAQ. Please try again.');
+      }
     }
   };
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingFaq.id) {
-      setFaqs(faqs.map((f) => f.id === editingFaq.id ? editingFaq : f));
-    } else {
-      setFaqs([
-      ...faqs,
-      {
-        ...editingFaq,
-        id: Date.now()
-      }]
-      );
+    try {
+      if (editingFaq.id) {
+        // Update existing
+        const updated = await adminApi.updateFaq(editingFaq.id, editingFaq);
+        setFaqs(faqs.map((f) => f.id === editingFaq.id ? updated : f));
+      } else {
+        // Create new
+        const created = await adminApi.createFaq(editingFaq);
+        setFaqs([...faqs, created]);
+      }
+      setIsModalOpen(false);
+    } catch (e) {
+      alert('Failed to save FAQ. Please check your connection and try again.');
     }
-    setIsModalOpen(false);
   };
   const columns = [
   {

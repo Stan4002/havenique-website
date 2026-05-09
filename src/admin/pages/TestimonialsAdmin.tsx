@@ -11,21 +11,36 @@ export function TestimonialsAdmin() {
       setLoading(false);
     });
   }, []);
-  const handleStatusChange = (id: number, newStatus: string) => {
-    setTestimonials(
-      testimonials.map((t) =>
-      t.id === id ?
-      {
-        ...t,
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    try {
+      const updatedTestimonial = testimonials.find((t) => t.id === id);
+      if (!updatedTestimonial) return;
+      await adminApi.updateTestimonial(id.toString(), {
+        ...updatedTestimonial,
         status: newStatus
-      } :
-      t
-      )
-    );
+      });
+      setTestimonials(
+        testimonials.map((t) =>
+        t.id === id ?
+        {
+          ...t,
+          status: newStatus
+        } :
+        t
+        )
+      );
+    } catch (e) {
+      alert('Failed to update testimonial status. Please try again.');
+    }
   };
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm('Delete this testimonial permanently?')) {
-      setTestimonials(testimonials.filter((t) => t.id !== id));
+      try {
+        await adminApi.deleteTestimonial(id.toString());
+        setTestimonials(testimonials.filter((t) => t.id !== id));
+      } catch (e) {
+        alert('Failed to delete testimonial. Please try again.');
+      }
     }
   };
   const filteredTestimonials = testimonials.filter(

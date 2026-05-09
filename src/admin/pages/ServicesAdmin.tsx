@@ -34,27 +34,32 @@ export function ServicesAdmin() {
   };
   const handleDelete = async (service: any) => {
     if (window.confirm(`Are you sure you want to delete "${service.name}"?`)) {
-      // Mock delete
-      setServices(services.filter((s) => s.id !== service.id));
+      try {
+        await adminApi.deleteService(service.id);
+        setServices(services.filter((s) => s.id !== service.id));
+      } catch (e) {
+        alert('Failed to delete service. Please try again.');
+      }
     }
   };
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock save
-    if (editingService.id) {
-      setServices(
-        services.map((s) => s.id === editingService.id ? editingService : s)
-      );
-    } else {
-      setServices([
-      ...services,
-      {
-        ...editingService,
-        id: Date.now()
-      }]
-      );
+    try {
+      if (editingService.id) {
+        // Update existing
+        const updated = await adminApi.updateService(editingService.id, editingService);
+        setServices(
+          services.map((s) => s.id === editingService.id ? updated : s)
+        );
+      } else {
+        // Create new
+        const created = await adminApi.createService(editingService);
+        setServices([...services, created]);
+      }
+      setIsModalOpen(false);
+    } catch (e) {
+      alert('Failed to save service. Please check your connection and try again.');
     }
-    setIsModalOpen(false);
   };
   const columns = [
   {

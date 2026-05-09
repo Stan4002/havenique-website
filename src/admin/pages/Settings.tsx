@@ -23,9 +23,14 @@ export function Settings() {
   };
   const handleSave = async () => {
     setSaving(true);
-    await adminApi.updateSettings(settings);
-    setSaving(false);
-    alert('Settings saved successfully!');
+    try {
+      await adminApi.updateSettings(settings);
+      alert('Settings saved successfully!');
+    } catch (e: any) {
+      alert(`Failed to save: ${e.message}`);
+    } finally {
+      setSaving(false);
+    }
   };
   if (loading) return <div>Loading settings...</div>;
   return (

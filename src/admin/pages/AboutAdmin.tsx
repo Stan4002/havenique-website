@@ -22,9 +22,14 @@ export function AboutAdmin() {
   };
   const handleSave = async () => {
     setSaving(true);
-    await adminApi.updateAbout(about);
-    setSaving(false);
-    alert('About page content saved successfully!');
+    try {
+      await adminApi.updateAbout(about);
+      alert('About page content saved successfully!');
+    } catch (e: any) {
+      alert(`Failed to save: ${e.message}`);
+    } finally {
+      setSaving(false);
+    }
   };
   if (loading) return <div>Loading...</div>;
   return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Mail, MailOpen, Phone, Calendar, Check } from 'lucide-react';
+import { Mail, MailOpen, Phone, Calendar, Check, Trash2 } from 'lucide-react';
 import { adminApi } from '../adminApi';
 export function Inbox() {
   const [messages, setMessages] = useState<any[]>([]);
@@ -13,17 +13,32 @@ export function Inbox() {
   }, []);
   const handleMarkAsRead = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    await adminApi.markAsRead(id);
-    setMessages(
-      messages.map((m) =>
-      m.id === id ?
-      {
-        ...m,
-        read: true
-      } :
-      m
-      )
-    );
+    try {
+      await adminApi.markAsRead(id.toString());
+      setMessages(
+        messages.map((m) =>
+        m.id === id ?
+        {
+          ...m,
+          read: true
+        } :
+        m
+        )
+      );
+    } catch (e: any) {
+      alert(`Failed to mark as read: ${e.message}`);
+    }
+  };
+  const handleDelete = async (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('Delete this message permanently?')) {
+      try {
+        await adminApi.deleteMessage(id.toString());
+        setMessages(messages.filter((m) => m.id !== id));
+      } catch (e: any) {
+        alert(`Failed to delete: ${e.message}`);
+      }
+    }
   };
   return (
     <div className="admin-card">
@@ -216,6 +231,21 @@ export function Inbox() {
                 
                         {msg.message}
                       </p>
+                    </div>
+                    <div
+                      style={{
+                        marginTop: '20px',
+                        paddingTop: '20px',
+                        borderTop: '1px solid var(--admin-border)',
+                        display: 'flex',
+                        justifyContent: 'flex-end'
+                      }}>
+                      <button
+                        onClick={(e) => handleDelete(msg.id, e)}
+                        className="admin-btn admin-btn-danger admin-btn-sm"
+                        title="Delete">
+                        <Trash2 size={16} /> Delete
+                      </button>
                     </div>
                   </div>
           }

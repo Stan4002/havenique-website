@@ -30,12 +30,17 @@ export function PricingAdmin() {
     });
     setIsModalOpen(true);
   };
-  const handleDelete = (plan: any) => {
+  const handleDelete = async (plan: any) => {
     if (window.confirm(`Delete plan "${plan.name}"?`)) {
-      setPlans(plans.filter((p) => p.id !== plan.id));
+      try {
+        await adminApi.deletePricing(plan.id);
+        setPlans(plans.filter((p) => p.id !== plan.id));
+      } catch (e) {
+        alert('Failed to delete pricing plan. Please try again.');
+      }
     }
   };
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     const processedPlan = {
       ...editingPlan,
@@ -47,20 +52,22 @@ export function PricingAdmin() {
       []
     };
     delete processedPlan.featuresStr;
-    if (processedPlan.id) {
-      setPlans(
-        plans.map((p) => p.id === processedPlan.id ? processedPlan : p)
-      );
-    } else {
-      setPlans([
-      ...plans,
-      {
-        ...processedPlan,
-        id: Date.now()
-      }]
-      );
+    try {
+      if (processedPlan.id) {
+        // Update existing
+        const updated = await adminApi.updatePricing(processedPlan.id, processedPlan);
+        setPlans(
+          plans.map((p) => p.id === processedPlan.id ? updated : p)
+        );
+      } else {
+        // Create new
+        const created = await adminApi.createPricing(processedPlan);
+        setPlans([...plans, created]);
+      }
+      setIsModalOpen(false);
+    } catch (e) {
+      alert('Failed to save pricing plan. Please check your connection and try again.');
     }
-    setIsModalOpen(false);
   };
   const columns = [
   {

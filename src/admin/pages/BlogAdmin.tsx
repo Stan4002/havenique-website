@@ -16,9 +16,14 @@ export function BlogAdmin() {
   const handleEdit = (post: any) => {
     navigate(`/admin/blog/${post.slug}/edit`);
   };
-  const handleDelete = (post: any) => {
+  const handleDelete = async (post: any) => {
     if (window.confirm(`Delete post "${post.title}"?`)) {
-      setPosts(posts.filter((p) => p.id !== post.id));
+      try {
+        await adminApi.deleteBlogPost(post.id);
+        setPosts(posts.filter((p) => p.id !== post.id));
+      } catch (e) {
+        alert('Failed to delete blog post. Please try again.');
+      }
     }
   };
   const columns = [

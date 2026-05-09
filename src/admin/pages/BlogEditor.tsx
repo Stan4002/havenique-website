@@ -54,12 +54,21 @@ export function BlogEditor() {
       ...post,
       status
     };
-    // Mock save
-    console.log('Saving post:', finalPost);
-    alert(
-      `Post ${status === 'published' ? 'published' : 'saved as draft'} successfully!`
-    );
-    navigate('/admin/blog');
+    try {
+      if (isNew) {
+        // Create new post
+        await adminApi.createBlogPost(finalPost);
+      } else {
+        // Update existing post
+        await adminApi.updateBlogPost(post.id, finalPost);
+      }
+      alert(
+        `Post ${status === 'published' ? 'published' : 'saved as draft'} successfully!`
+      );
+      navigate('/admin/blog');
+    } catch (e: any) {
+      alert(`Failed to save post: ${e.message}`);
+    }
   };
   if (loading) return <div>Loading editor...</div>;
   return (

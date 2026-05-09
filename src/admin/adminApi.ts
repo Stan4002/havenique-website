@@ -212,14 +212,13 @@ export const adminApi = {
   },
 
   updateSettings: async (data: any) => {
-    try {
-      return await authFetch(`${API_BASE}/admin/settings`, {
-        method: 'PUT',
-        body: JSON.stringify(data)
-      });
-    } catch (e) {
-      return { success: true };
-    }
+    return await authFetch(`${API_BASE}/admin/settings`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }).catch((e) => {
+      console.error('Failed to update settings:', e);
+      throw e;
+    });
   },
 
   getAbout: async () => {
@@ -236,14 +235,13 @@ export const adminApi = {
   },
 
   updateAbout: async (data: any) => {
-    try {
-      return await authFetch(`${API_BASE}/admin/about`, {
-        method: 'PUT',
-        body: JSON.stringify(data)
-      });
-    } catch (e) {
-      return { success: true };
-    }
+    return await authFetch(`${API_BASE}/admin/about`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }).catch((e) => {
+      console.error('Failed to update about page:', e);
+      throw e;
+    });
   },
 
   getServices: async () => {
@@ -388,11 +386,10 @@ export const adminApi = {
     }
   },
   markAsRead: async (id: string) => {
-    try {
-      return await authFetch(`${API_BASE}/admin/contact/${id}/read`, { method: 'PUT' });
-    } catch (e) {
-      return { success: true };
-    }
+    return await authFetch(`${API_BASE}/admin/contact/${id}/read`, { method: 'PUT' }).catch((e) => {
+      console.error('Failed to mark message as read:', e);
+      throw e;
+    });
   },
   deleteMessage: async (id: string) => {
     return await authFetch(`${API_BASE}/admin/contact/${id}`, { method: 'DELETE' });
