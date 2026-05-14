@@ -24,15 +24,28 @@ export function BlogEditor() {
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (!isNew) {
-      // Fetch existing post by ID
-      adminApi.getBlogPosts().then((posts) => {
-        const found = posts.find((p: any) => p.id === parseInt(id));
-        if (found) setPost(found);
-        setLoading(false);
-      }).catch((e) => {
-        console.error('Failed to load post:', e);
-        setLoading(false);
-      });
+      const loadPost = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          const posts = await adminApi.getBlogPosts();
+          const found = Array.isArray(posts) ? posts.find((p: any) => p.id === parseInt(id)) : null;
+          if (found) {
+            setPost({
+              ...found,
+              published_at: found.published_at || new Date().toISOString().split('T')[0]
+            });
+          } else {
+            setError('Blog post not found');
+          }
+        } catch (e) {
+          console.error('Failed to load post:', e);
+          setError('Failed to load blog post');
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadPost();
     }
   }, [id, isNew]);
   const handleChange = (
@@ -85,7 +98,30 @@ export function BlogEditor() {
       setSaving(false);
     }
   };
-  if (loading) return <div>Loading editor...</div>;
+  if (loading) return <div style={{ padding: '20px' }}>Loading editor...</div>;
+  
+  if (error && !isNew) return (
+    <div className="admin-card">
+      <div style={{ 
+        backgroundColor: '#fee',
+        color: '#c33',
+        padding: '20px',
+        borderRadius: '6px',
+        marginBottom: '16px',
+        borderLeft: '4px solid #c33'
+      }}>
+        {error}
+        <div style={{ marginTop: '16px' }}>
+          <button 
+            onClick={() => navigate('/admin/blog')}
+            className="admin-btn admin-btn-secondary"
+          >
+            Back to Blog
+          </button>
+        </div>
+      </div>
+    </div>
+  );
   return (
     <div>
       <div

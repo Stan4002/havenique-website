@@ -10,10 +10,18 @@ export function ServicesAdmin() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fetchServices = async () => {
-    setLoading(true);
-    const data = await adminApi.getServices();
-    setServices(data.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0)));
-    setLoading(false);
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await adminApi.getServices();
+      setServices(Array.isArray(data) ? data.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0)) : []);
+    } catch (e) {
+      console.error('Failed to fetch services:', e);
+      setError('Failed to load services');
+      setServices([]);
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => {
     fetchServices();
@@ -114,6 +122,19 @@ export function ServicesAdmin() {
 
       {loading ?
       <div>Loading...</div> :
+
+      error ? (
+        <div style={{
+          backgroundColor: '#fee',
+          color: '#c33',
+          padding: '12px 16px',
+          borderRadius: '6px',
+          marginBottom: '16px',
+          borderLeft: '4px solid #c33'
+        }}>
+          {error}
+        </div>
+      ) :
 
       <DataTable
         columns={columns}

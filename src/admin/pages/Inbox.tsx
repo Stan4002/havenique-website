@@ -6,10 +6,19 @@ export function Inbox() {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   useEffect(() => {
-    adminApi.getInbox().then((data) => {
-      setMessages(data);
-      setLoading(false);
-    });
+    const fetchInbox = async () => {
+      try {
+        setLoading(true);
+        const data = await adminApi.getInbox();
+        setMessages(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error('Failed to fetch inbox:', e);
+        setMessages([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchInbox();
   }, []);
   const handleMarkAsRead = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
