@@ -74,7 +74,19 @@ export function Blog() {
                   {posts.map((post: any) =>
                 <div key={post.id} className="blog-card">
                       <div className="blog-image">
-                        <ImageIcon size={48} opacity={0.5} />
+                        {post.image_url ? (
+                          <img
+                            src={post.image_url}
+                            alt={post.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover'
+                            }}
+                          />
+                        ) : (
+                          <ImageIcon size={48} opacity={0.5} />
+                        )}
                       </div>
                       <div className="blog-content">
                         <div className="blog-meta">

@@ -86,7 +86,20 @@ export function Team() {
             staff?.map((member) =>
               <div key={member.id} className="team-member-card">
                     <div className="team-member-avatar">
-                      {getInitials(member.name)}
+                      {member.photo_url ? (
+                        <img
+                          src={member.photo_url}
+                          alt={member.name}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: '50%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      ) : (
+                        getInitials(member.name)
+                      )}
                     </div>
                     <h3>{member.name}</h3>
                     <p className="team-member-role">{member.role}</p>
@@ -131,7 +144,20 @@ export function Team() {
 
               <div className="modal-header">
                 <div className="modal-avatar">
-                  {getInitials(selectedMember.name)}
+                  {selectedMember.photo_url ? (
+                    <img
+                      src={selectedMember.photo_url}
+                      alt={selectedMember.name}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '50%',
+                        objectFit: 'cover'
+                      }}
+                    />
+                  ) : (
+                    getInitials(selectedMember.name)
+                  )}
                 </div>
                 <div className="modal-title">
                   <h3>{selectedMember.name}</h3>

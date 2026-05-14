@@ -272,7 +272,20 @@ export function Home() {
               }}>
               
                     <div className="team-avatar">
-                      {getInitials(member.name)}
+                      {member.photo_url ? (
+                        <img
+                          src={member.photo_url}
+                          alt={member.name}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: '50%',
+                            objectFit: 'cover'
+                          }}
+                        />
+                      ) : (
+                        getInitials(member.name)
+                      )}
                     </div>
                     <h3>{member.name}</h3>
                     <p className="team-role">{member.role}</p>

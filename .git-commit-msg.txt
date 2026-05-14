@@ -1,0 +1,23 @@
+Fix admin dashboard data flow: API integration, error handling, and image rendering
+
+- Enhanced adminApi.ts with response normalization for all GET methods
+- Fixed uploadImage() to handle multiple response field name formats
+- Converted all admin pages from .then() to async/await with try/catch/finally
+- Added error state management and inline error messages to all pages
+- Added proper loading state management with finally blocks
+- Added array type validation to all API responses
+- Fixed BlogEditor post loading with proper error handling
+- Fixed TestimonialsAdmin state updates to use API responses
+- Converted Settings, About, Inbox, and AdminLayout to async/await
+- Ensured all pages properly sync with database on load
+- Images now upload and render correctly immediately
+- All CRUD operations now properly await API responses before updating state
+
+Fixes:
+- Services, Pricing, FAQ, Blog, Testimonials, Staff pages now load and save correctly
+- Image uploads display immediately and persist after refresh
+- API failures show inline error messages instead of silent failures
+- Loading states no longer hang on API errors
+- All data survives page refresh from real database
+
+

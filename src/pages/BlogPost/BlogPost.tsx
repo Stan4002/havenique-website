@@ -96,7 +96,19 @@ export function BlogPost() {
             </header>
 
             <div className="post-featured-image">
-              <ImageIcon size={80} opacity={0.5} />
+              {post.image_url ? (
+                <img
+                  src={post.image_url}
+                  alt={post.title}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                />
+              ) : (
+                <ImageIcon size={80} opacity={0.5} />
+              )}
             </div>
 
             <div
