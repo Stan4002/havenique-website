@@ -11,22 +11,43 @@ import {
 import { adminApi } from '../adminApi';
 import { DataTable } from '../components/DataTable';
 export function Dashboard() {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    adminApi.getDashboard().then((res) => {
-      setData(res);
-      setLoading(false);
-    });
-  }, []);
-  if (loading) return <div>Loading dashboard...</div>;
-  const stats = data?.stats || {
+  const [stats, setStats] = useState<any>({
     totalServices: 0,
     totalStaff: 0,
     blogPosts: 0,
     unreadMessages: 0
-  };
-  const recentMessages = data?.recentMessages || [];
+  });
+  const [recentMessages, setRecentMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [services, staff, blog, messages] = await Promise.all([
+          adminApi.getServices().catch(() => []),
+          adminApi.getStaff().catch(() => []),
+          adminApi.getBlogPosts().catch(() => []),
+          adminApi.getInbox().catch(() => [])
+        ]);
+
+        const unreadCount = messages.filter((m: any) => !m.read).length;
+
+        setStats({
+          totalServices: services.length,
+          totalStaff: staff.length,
+          blogPosts: blog.length,
+          unreadMessages: unreadCount
+        });
+        setRecentMessages(messages.slice(0, 5));
+      } catch (e) {
+        console.error('Failed to fetch dashboard data:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
   const messageColumns = [
   {
     key: 'name',

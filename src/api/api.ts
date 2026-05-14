@@ -242,40 +242,48 @@ const fallbackFaq = [
 const fallbackPricing = [
 {
   id: 1,
-  name: 'Basic Care Visit',
+  plan_name: 'Basic Care Visit',
   price: '450',
+  currency: 'ZMW',
+  description: 'Per Visit',
   features: [
   'Up to 2 hours',
   'Vitals check',
   'Medication administration',
   'Basic grooming'],
-
-  isPopular: false
+  is_popular: false,
+  visible: true,
+  order_index: 1
 },
 {
   id: 2,
-  name: 'Standard Daily Care',
+  plan_name: 'Standard Daily Care',
   price: '1,200',
+  currency: 'ZMW',
+  description: '8-Hour Shift',
   features: [
-  '8-hour shift',
   'Full personal care',
   'Meal assistance',
   'Mobility support',
   'Vitals monitoring'],
-
-  isPopular: true
+  is_popular: true,
+  visible: true,
+  order_index: 2
 },
 {
   id: 3,
-  name: '24-Hour Premium Care',
+  plan_name: '24-Hour Premium Care',
   price: '2,800',
+  currency: 'ZMW',
+  description: 'Full Day',
   features: [
   'Round-the-clock care',
   'Dedicated nursing team',
   'Complex care management',
   'Emergency support priority'],
-
-  isPopular: false
+  is_popular: false,
+  visible: true,
+  order_index: 3
 }];
 
 
