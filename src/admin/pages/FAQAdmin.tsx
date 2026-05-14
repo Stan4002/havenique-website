@@ -7,6 +7,8 @@ export function FAQAdmin() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingFaq, setEditingFaq] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     adminApi.getFaq().then((data) => {
       setFaqs(data);
@@ -23,7 +25,7 @@ export function FAQAdmin() {
     setEditingFaq({
       question: '',
       answer: '',
-      order: faqs.length + 1,
+      order_index: faqs.length + 1,
       visible: true
     });
     setIsModalOpen(true);
@@ -31,28 +33,42 @@ export function FAQAdmin() {
   const handleDelete = async (faq: any) => {
     if (window.confirm(`Delete FAQ?`)) {
       try {
+        setSaving(true);
+        setError(null);
         await adminApi.deleteFaq(faq.id);
         setFaqs(faqs.filter((f) => f.id !== faq.id));
       } catch (e) {
-        alert('Failed to delete FAQ. Please try again.');
+        setError('Failed to delete FAQ. Please try again.');
+      } finally {
+        setSaving(false);
       }
     }
   };
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setSaving(true);
+      setError(null);
+      const dataToSave = {
+        question: editingFaq.question,
+        answer: editingFaq.answer,
+        order_index: editingFaq.order_index,
+        visible: editingFaq.visible !== undefined ? editingFaq.visible : true
+      };
       if (editingFaq.id) {
         // Update existing
-        const updated = await adminApi.updateFaq(editingFaq.id, editingFaq);
+        const updated = await adminApi.updateFaq(editingFaq.id, dataToSave);
         setFaqs(faqs.map((f) => f.id === editingFaq.id ? updated : f));
       } else {
         // Create new
-        const created = await adminApi.createFaq(editingFaq);
+        const created = await adminApi.createFaq(dataToSave);
         setFaqs([...faqs, created]);
       }
       setIsModalOpen(false);
     } catch (e) {
-      alert('Failed to save FAQ. Please check your connection and try again.');
+      setError('Failed to save FAQ. Please check your connection and try again.');
+    } finally {
+      setSaving(false);
     }
   };
   const columns = [
@@ -94,6 +110,18 @@ export function FAQAdmin() {
               </button>
             </div>
             <form onSubmit={handleSave}>
+              {error && (
+                <div style={{
+                  backgroundColor: '#fee',
+                  color: '#c33',
+                  padding: '12px 16px',
+                  borderRadius: '6px',
+                  marginBottom: '16px',
+                  borderLeft: '4px solid #c33'
+                }}>
+                  {error}
+                </div>
+              )}
               <div className="admin-modal-body">
                 <div className="admin-form-group">
                   <label className="admin-label">Question</label>
@@ -126,17 +154,63 @@ export function FAQAdmin() {
                   }} />
                 
                 </div>
+                <div className="admin-form-row">
+                  <div className="admin-form-group">
+                    <label className="admin-label">Display Order</label>
+                    <input
+                    type="number"
+                    className="admin-input"
+                    value={editingFaq.order_index}
+                    onChange={(e) =>
+                    setEditingFaq({
+                      ...editingFaq,
+                      order_index: parseInt(e.target.value)
+                    })
+                    } />
+                  
+                  </div>
+                </div>
+                <div className="admin-form-group">
+                  <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer'
+                  }}>
+                  
+                    <input
+                    type="checkbox"
+                    checked={editingFaq.visible !== undefined ? editingFaq.visible : true}
+                    onChange={(e) =>
+                    setEditingFaq({
+                      ...editingFaq,
+                      visible: e.target.checked
+                    })
+                    } />
+                  
+                    <span
+                    className="admin-label"
+                    style={{
+                      marginBottom: 0
+                    }}>
+                    
+                      Visible on website
+                    </span>
+                  </label>
+                </div>
               </div>
               <div className="admin-modal-footer">
                 <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
+                disabled={saving}
                 className="admin-btn admin-btn-secondary">
                 
                   Cancel
                 </button>
-                <button type="submit" className="admin-btn admin-btn-primary">
-                  Save FAQ
+                <button type="submit" disabled={saving} className="admin-btn admin-btn-primary">
+                  {saving ? 'Saving...' : 'Save FAQ'}
                 </button>
               </div>
             </form>

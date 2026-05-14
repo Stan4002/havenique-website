@@ -7,6 +7,8 @@ export function PricingAdmin() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     adminApi.getPricing().then((data) => {
       setPlans(data);
@@ -39,10 +41,14 @@ export function PricingAdmin() {
     const planName = plan.plan_name || plan.name;
     if (window.confirm(`Delete plan "${planName}"?`)) {
       try {
+        setSaving(true);
+        setError(null);
         await adminApi.deletePricing(plan.id);
         setPlans(plans.filter((p) => p.id !== plan.id));
       } catch (e) {
-        alert('Failed to delete pricing plan. Please try again.');
+        setError('Failed to delete pricing plan. Please try again.');
+      } finally {
+        setSaving(false);
       }
     }
   };
@@ -64,6 +70,8 @@ export function PricingAdmin() {
       order_index: editingPlan.order_index || 0
     };
     try {
+      setSaving(true);
+      setError(null);
       if (editingPlan.id) {
         // Update existing
         const updated = await adminApi.updatePricing(editingPlan.id, processedPlan);
@@ -77,7 +85,9 @@ export function PricingAdmin() {
       }
       setIsModalOpen(false);
     } catch (e) {
-      alert('Failed to save pricing plan. Please check your connection and try again.');
+      setError('Failed to save pricing plan. Please check your connection and try again.');
+    } finally {
+      setSaving(false);
     }
   };
   const columns = [
@@ -133,6 +143,18 @@ export function PricingAdmin() {
               </button>
             </div>
             <form onSubmit={handleSave}>
+              {error && (
+                <div style={{
+                  backgroundColor: '#fee',
+                  color: '#c33',
+                  padding: '12px 16px',
+                  borderRadius: '6px',
+                  marginBottom: '16px',
+                  borderLeft: '4px solid #c33'
+                }}>
+                  {error}
+                </div>
+              )}
               <div className="admin-modal-body">
                 <div className="admin-form-row">
                   <div className="admin-form-group">
@@ -185,6 +207,21 @@ export function PricingAdmin() {
                 
                 </div>
 
+                <div className="admin-form-group">
+                  <label className="admin-label">Billing Unit (e.g., Per Visit, 4 Hours)</label>
+                  <input
+                  className="admin-input"
+                  value={editingPlan.description}
+                  onChange={(e) =>
+                  setEditingPlan({
+                    ...editingPlan,
+                    description: e.target.value
+                  })
+                  }
+                  placeholder="e.g., Per Visit, 4 Hours, Per Month" />
+                
+                </div>
+
                 <div
                 className="admin-form-group"
                 style={{
@@ -220,18 +257,46 @@ export function PricingAdmin() {
                       Mark as Popular
                     </span>
                   </label>
+                  <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    cursor: 'pointer'
+                  }}>
+                  
+                    <input
+                    type="checkbox"
+                    checked={editingPlan.visible !== undefined ? editingPlan.visible : true}
+                    onChange={(e) =>
+                    setEditingPlan({
+                      ...editingPlan,
+                      visible: e.target.checked
+                    })
+                    } />
+                  
+                    <span
+                    className="admin-label"
+                    style={{
+                      marginBottom: 0
+                    }}>
+                    
+                      Visible on website
+                    </span>
+                  </label>
                 </div>
               </div>
               <div className="admin-modal-footer">
                 <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
+                disabled={saving}
                 className="admin-btn admin-btn-secondary">
                 
                   Cancel
                 </button>
-                <button type="submit" className="admin-btn admin-btn-primary">
-                  Save Plan
+                <button type="submit" disabled={saving} className="admin-btn admin-btn-primary">
+                  {saving ? 'Saving...' : 'Save Plan'}
                 </button>
               </div>
             </form>

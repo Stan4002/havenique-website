@@ -6,6 +6,8 @@ import { DataTable } from '../components/DataTable';
 export function BlogAdmin() {
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   useEffect(() => {
     adminApi.getBlogPosts().then((data) => {
@@ -14,15 +16,31 @@ export function BlogAdmin() {
     });
   }, []);
   const handleEdit = (post: any) => {
-    navigate(`/admin/blog/${post.slug}/edit`);
+    navigate(`/admin/blog/${post.id}/edit`);
+  };
+  const handlePublish = async (post: any) => {
+    try {
+      setSaving(true);
+      setError(null);
+      const updated = await adminApi.updateBlogPost(post.id, { published: !post.published });
+      setPosts(posts.map((p) => p.id === post.id ? updated : p));
+    } catch (e) {
+      setError('Failed to update post. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
   const handleDelete = async (post: any) => {
     if (window.confirm(`Delete post "${post.title}"?`)) {
       try {
+        setSaving(true);
+        setError(null);
         await adminApi.deleteBlogPost(post.id);
         setPosts(posts.filter((p) => p.id !== post.id));
       } catch (e) {
-        alert('Failed to delete blog post. Please try again.');
+        setError('Failed to delete blog post. Please try again.');
+      } finally {
+        setSaving(false);
       }
     }
   };
@@ -36,18 +54,18 @@ export function BlogAdmin() {
     label: 'Category'
   },
   {
-    key: 'date',
+    key: 'published_at',
     label: 'Date',
-    render: (val: string) => new Date(val).toLocaleDateString()
+    render: (val: string) => val ? new Date(val).toLocaleDateString() : 'Draft'
   },
   {
-    key: 'status',
+    key: 'published',
     label: 'Status',
-    render: (val: string) =>
+    render: (val: boolean) =>
     <span
-      className={`admin-status ${val === 'published' ? 'admin-status-success' : 'admin-status-neutral'}`}>
+      className={`admin-status ${val ? 'admin-status-success' : 'admin-status-neutral'}`}>
       
-          {val === 'published' ? 'Published' : 'Draft'}
+          {val ? 'Published' : 'Draft'}
         </span>
 
   }];
@@ -60,6 +78,19 @@ export function BlogAdmin() {
           <Plus size={16} /> New Post
         </Link>
       </div>
+
+      {error && (
+        <div style={{
+          backgroundColor: '#fee',
+          color: '#c33',
+          padding: '12px 16px',
+          borderRadius: '6px',
+          marginBottom: '16px',
+          borderLeft: '4px solid #c33'
+        }}>
+          {error}
+        </div>
+      )}
 
       {loading ?
       <div>Loading...</div> :

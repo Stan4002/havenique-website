@@ -7,6 +7,8 @@ export function ServicesAdmin() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fetchServices = async () => {
     setLoading(true);
     const data = await adminApi.getServices();
@@ -35,30 +37,45 @@ export function ServicesAdmin() {
   const handleDelete = async (service: any) => {
     if (window.confirm(`Are you sure you want to delete "${service.name}"?`)) {
       try {
+        setSaving(true);
+        setError(null);
         await adminApi.deleteService(service.id);
         setServices(services.filter((s) => s.id !== service.id));
       } catch (e) {
-        alert('Failed to delete service. Please try again.');
+        setError('Failed to delete service. Please try again.');
+      } finally {
+        setSaving(false);
       }
     }
   };
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      setSaving(true);
+      setError(null);
+      const dataToSave = {
+        name: editingService.name,
+        description: editingService.description,
+        icon: editingService.icon,
+        visible: editingService.visible,
+        order_index: editingService.order_index
+      };
       if (editingService.id) {
         // Update existing
-        const updated = await adminApi.updateService(editingService.id, editingService);
+        const updated = await adminApi.updateService(editingService.id, dataToSave);
         setServices(
           services.map((s) => s.id === editingService.id ? updated : s)
         );
       } else {
         // Create new
-        const created = await adminApi.createService(editingService);
+        const created = await adminApi.createService(dataToSave);
         setServices([...services, created]);
       }
       setIsModalOpen(false);
     } catch (e) {
-      alert('Failed to save service. Please check your connection and try again.');
+      setError('Failed to save service. Please check your connection and try again.');
+    } finally {
+      setSaving(false);
     }
   };
   const columns = [
@@ -120,6 +137,18 @@ export function ServicesAdmin() {
               </button>
             </div>
             <form onSubmit={handleSave}>
+              {error && (
+                <div style={{
+                  backgroundColor: '#fee',
+                  color: '#c33',
+                  padding: '12px 16px',
+                  borderRadius: '6px',
+                  marginBottom: '16px',
+                  borderLeft: '4px solid #c33'
+                }}>
+                  {error}
+                </div>
+              )}
               <div className="admin-modal-body">
                 <div className="admin-form-group">
                   <label className="admin-label">Service Name</label>
@@ -169,11 +198,11 @@ export function ServicesAdmin() {
                     <input
                     type="number"
                     className="admin-input"
-                    value={editingService.order}
+                    value={editingService.order_index}
                     onChange={(e) =>
                     setEditingService({
                       ...editingService,
-                      order: parseInt(e.target.value)
+                      order_index: parseInt(e.target.value)
                     })
                     } />
                   
@@ -213,12 +242,13 @@ export function ServicesAdmin() {
                 <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
+                disabled={saving}
                 className="admin-btn admin-btn-secondary">
                 
                   Cancel
                 </button>
-                <button type="submit" className="admin-btn admin-btn-primary">
-                  Save Service
+                <button type="submit" disabled={saving} className="admin-btn admin-btn-primary">
+                  {saving ? 'Saving...' : 'Save Service'}
                 </button>
               </div>
             </form>

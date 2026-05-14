@@ -5,6 +5,8 @@ export function TestimonialsAdmin() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'pending' | 'approved'>('pending');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     adminApi.getTestimonials().then((data) => {
       setTestimonials(data);
@@ -13,10 +15,11 @@ export function TestimonialsAdmin() {
   }, []);
   const handleStatusChange = async (id: number, newApproved: boolean) => {
     try {
+      setSaving(true);
+      setError(null);
       const updatedTestimonial = testimonials.find((t) => t.id === id);
       if (!updatedTestimonial) return;
       await adminApi.updateTestimonial(id.toString(), {
-        ...updatedTestimonial,
         approved: newApproved
       });
       setTestimonials(
@@ -30,16 +33,22 @@ export function TestimonialsAdmin() {
         )
       );
     } catch (e) {
-      alert('Failed to update testimonial status. Please try again.');
+      setError('Failed to update testimonial status. Please try again.');
+    } finally {
+      setSaving(false);
     }
   };
   const handleDelete = async (id: number) => {
     if (window.confirm('Delete this testimonial permanently?')) {
       try {
+        setSaving(true);
+        setError(null);
         await adminApi.deleteTestimonial(id.toString());
         setTestimonials(testimonials.filter((t) => t.id !== id));
       } catch (e) {
-        alert('Failed to delete testimonial. Please try again.');
+        setError('Failed to delete testimonial. Please try again.');
+      } finally {
+        setSaving(false);
       }
     }
   };
@@ -65,20 +74,35 @@ export function TestimonialsAdmin() {
           
           <button
             className={`admin-btn ${activeTab === 'pending' ? 'admin-btn-primary' : 'admin-btn-secondary'}`}
-            onClick={() => setActiveTab('pending')}>
+            onClick={() => setActiveTab('pending')}
+            disabled={saving}>
             
             Pending Review (
             {testimonials.filter((t) => !t.approved).length})
           </button>
           <button
             className={`admin-btn ${activeTab === 'approved' ? 'admin-btn-primary' : 'admin-btn-secondary'}`}
-            onClick={() => setActiveTab('approved')}>
+            onClick={() => setActiveTab('approved')}
+            disabled={saving}>
             
             Approved (
             {testimonials.filter((t) => t.approved).length})
           </button>
         </div>
       </div>
+
+      {error && (
+        <div style={{
+          backgroundColor: '#fee',
+          color: '#c33',
+          padding: '12px 16px',
+          borderRadius: '6px',
+          marginBottom: '16px',
+          borderLeft: '4px solid #c33'
+        }}>
+          {error}
+        </div>
+      )}
 
       {loading ?
       <div>Loading...</div> :
@@ -166,6 +190,7 @@ export function TestimonialsAdmin() {
                   {!t.approved ?
             <button
               onClick={() => handleStatusChange(t.id, true)}
+              disabled={saving}
               className="admin-btn admin-btn-success admin-btn-sm"
               title="Approve">
               
@@ -174,6 +199,7 @@ export function TestimonialsAdmin() {
 
             <button
               onClick={() => handleStatusChange(t.id, false)}
+              disabled={saving}
               className="admin-btn admin-btn-secondary admin-btn-sm"
               title="Unapprove">
               
@@ -182,6 +208,7 @@ export function TestimonialsAdmin() {
             }
                   <button
               onClick={() => handleDelete(t.id)}
+              disabled={saving}
               className="admin-btn admin-btn-danger admin-btn-sm"
               title="Delete">
               

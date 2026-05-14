@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { X, UserPlus } from 'lucide-react';
+import { X } from 'lucide-react';
 import { PageMeta } from '../../components/PageMeta';
 import { SkeletonLoader } from '../../components/SkeletonLoader/SkeletonLoader';
 import { useApi } from '../../hooks/useApi';
@@ -83,8 +83,7 @@ export function Team() {
                   </div>
             ) :
 
-            <>
-                {staff?.map((member) =>
+            staff?.map((member) =>
               <div key={member.id} className="team-member-card">
                     <div className="team-member-avatar">
                       {getInitials(member.name)}
@@ -110,15 +109,6 @@ export function Team() {
                     </button>
                   </div>
               )}
-
-                {/* Coming Soon Card */}
-                <div className="coming-soon-card">
-                  <UserPlus size={48} />
-                  <h3>More Staff Coming Soon</h3>
-                  <p>We are expanding our team.</p>
-                </div>
-              </>
-            }
           </div>
         </div>
       </section>

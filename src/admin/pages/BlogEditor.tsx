@@ -20,12 +20,17 @@ export function BlogEditor() {
     image_url: ''
   });
   const [loading, setLoading] = useState(!isNew);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (!isNew) {
-      // In a real app, we'd fetch by ID. Using slug here since that's what we have in fallback
+      // Fetch existing post by ID
       adminApi.getBlogPosts().then((posts) => {
-        const found = posts.find((p: any) => p.slug === id);
+        const found = posts.find((p: any) => p.id === parseInt(id));
         if (found) setPost(found);
+        setLoading(false);
+      }).catch((e) => {
+        console.error('Failed to load post:', e);
         setLoading(false);
       });
     }
@@ -64,6 +69,8 @@ export function BlogEditor() {
       image_url: post.image_url || ''
     };
     try {
+      setSaving(true);
+      setError(null);
       if (isNew) {
         // Create new post
         await adminApi.createBlogPost(finalPost);
@@ -71,12 +78,11 @@ export function BlogEditor() {
         // Update existing post
         await adminApi.updateBlogPost(post.id, finalPost);
       }
-      alert(
-        `Post ${publishStatus ? 'published' : 'saved as draft'} successfully!`
-      );
       navigate('/admin/blog');
     } catch (e: any) {
-      alert(`Failed to save post: ${e.message}`);
+      setError(`Failed to save post: ${e.message || 'Unknown error'}`);
+    } finally {
+      setSaving(false);
     }
   };
   if (loading) return <div>Loading editor...</div>;
@@ -106,18 +112,33 @@ export function BlogEditor() {
             
             <button
               onClick={() => handleSave(false)}
+              disabled={saving}
               className="admin-btn admin-btn-secondary">
               
-              Save Draft
+              {saving ? 'Saving...' : 'Save Draft'}
             </button>
             <button
               onClick={() => handleSave(true)}
+              disabled={saving}
               className="admin-btn admin-btn-primary">
               
-              <Save size={16} /> Publish
+              <Save size={16} /> {saving ? 'Publishing...' : 'Publish'}
             </button>
           </div>
         </div>
+
+        {error && (
+          <div style={{
+            backgroundColor: '#fee',
+            color: '#c33',
+            padding: '12px 16px',
+            borderRadius: '6px',
+            marginBottom: '16px',
+            borderLeft: '4px solid #c33'
+          }}>
+            {error}
+          </div>
+        )}
 
         <div
           style={{

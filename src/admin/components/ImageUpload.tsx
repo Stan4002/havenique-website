@@ -12,18 +12,20 @@ export function ImageUpload({
   label = 'Upload Image'
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setIsUploading(true);
+    setUploadError(null);
     try {
-      // Mock upload via API
+      // Upload via API
       const response = await adminApi.uploadImage(file);
       onChange(response.url);
     } catch (error) {
       console.error('Upload failed', error);
-      alert('Failed to upload image');
+      setUploadError('Failed to upload image. Please try again.');
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -100,7 +102,23 @@ export function ImageUpload({
             color: 'var(--admin-blue)'
           }}>
           
-              Uploading...
+              <div style={{
+                display: 'inline-block',
+                width: '32px',
+                height: '32px',
+                border: '4px solid var(--admin-border)',
+                borderTop: '4px solid var(--admin-blue)',
+                borderRadius: '50%',
+                animation: 'spin 0.6s linear infinite',
+                marginBottom: '12px'
+              }} />
+              <div>Uploading image...</div>
+              <style>{`
+                @keyframes spin {
+                  from { transform: rotate(0deg); }
+                  to { transform: rotate(360deg); }
+                }
+              `}</style>
             </div> :
 
         <>
@@ -132,6 +150,20 @@ export function ImageUpload({
         }
         </div>
       }
+
+      {uploadError && (
+        <div style={{
+          backgroundColor: '#fee',
+          color: '#c33',
+          padding: '12px 16px',
+          borderRadius: '6px',
+          marginTop: '12px',
+          borderLeft: '4px solid #c33',
+          fontSize: '14px'
+        }}>
+          {uploadError}
+        </div>
+      )}
 
       <input
         type="file"

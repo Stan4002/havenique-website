@@ -76,36 +76,47 @@ export function Pricing() {
             </div> :
           pricingPlans && pricingPlans.length > 0 ?
           <>
-              <div className="pricing-grid">
+          <div className="pricing-grid">
                 {pricingPlans.map((plan: any) =>
               <div
                 key={plan.id}
-                className={`pricing-card ${plan.isPopular ? 'popular' : ''}`}>
+                className={`pricing-card ${plan.is_popular ? 'popular' : ''}`}>
                 
-                    {plan.isPopular &&
+                    {plan.is_popular &&
                 <div className="popular-badge">Most Popular</div>
                 }
 
                     <div className="pricing-header">
-                      <h3>{plan.name}</h3>
+                      <h3>{plan.plan_name}</h3>
                       <div className="price">
                         <span className="currency">ZMW</span>
                         <span className="amount">{plan.price}</span>
                       </div>
+                      {plan.description && (
+                        <div className="pricing-unit" style={{
+                          fontSize: '14px',
+                          color: 'var(--text-light)',
+                          marginTop: '8px'
+                        }}>
+                          {plan.description}
+                        </div>
+                      )}
                     </div>
 
-                    <ul className="pricing-features">
-                      {plan.features.map((feature: string, index: number) =>
-                  <li key={index}>
-                          <Check size={20} />
-                          <span>{feature}</span>
-                        </li>
-                  )}
-                    </ul>
+                    {plan.features && plan.features.length > 0 && (
+                      <ul className="pricing-features">
+                        {plan.features.map((feature: string, index: number) =>
+                    <li key={index}>
+                            <Check size={20} />
+                            <span>{feature}</span>
+                          </li>
+                    )}
+                      </ul>
+                    )}
 
                     <Link
                   to="/contact"
-                  className={`btn ${plan.isPopular ? 'btn-primary' : 'btn-secondary'}`}>
+                  className={`btn ${plan.is_popular ? 'btn-primary' : 'btn-secondary'}`}>
                   
                       Book This Plan
                     </Link>
@@ -119,18 +130,17 @@ export function Pricing() {
             </> :
 
           <div className="empty-state">
-              <h3>Pricing coming soon</h3>
+              <h3>Contact us for pricing</h3>
               <p
               style={{
                 marginBottom: '24px',
                 color: 'var(--text-light)'
               }}>
               
-                We are currently updating our pricing structure. Please contact
-                us for a custom quote.
+                Our pricing plans are customized based on your specific needs. Please reach out to discuss your care requirements.
               </p>
               <Link to="/contact" className="btn btn-primary">
-                Contact Us for a Quote
+                Request a Custom Quote
               </Link>
             </div>
           }
