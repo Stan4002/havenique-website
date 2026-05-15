@@ -10,10 +10,21 @@ export function BlogAdmin() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   useEffect(() => {
-    adminApi.getBlogPosts().then((data) => {
-      setPosts(data);
-      setLoading(false);
-    });
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await adminApi.getBlogPosts();
+        setPosts(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error('Failed to fetch blog posts:', e);
+        setError('Failed to load blog posts');
+        setPosts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
   }, []);
   const handleEdit = (post: any) => {
     navigate(`/admin/blog/${post.id}/edit`);
@@ -94,6 +105,19 @@ export function BlogAdmin() {
 
       {loading ?
       <div>Loading...</div> :
+
+      error ? (
+        <div style={{
+          backgroundColor: '#fee',
+          color: '#c33',
+          padding: '12px 16px',
+          borderRadius: '6px',
+          marginBottom: '16px',
+          borderLeft: '4px solid #c33'
+        }}>
+          {error}
+        </div>
+      ) :
 
       <DataTable
         columns={columns}

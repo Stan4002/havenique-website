@@ -28,12 +28,17 @@ export function AdminLayout() {
     setSidebarOpen(false);
   }, [location]);
   useEffect(() => {
-    // Fetch unread messages count
-    adminApi.getDashboard().then((data) => {
-      if (data?.stats?.unreadMessages) {
-        setUnreadCount(data.stats.unreadMessages);
+    const fetchUnreadCount = async () => {
+      try {
+        const data = await adminApi.getDashboard();
+        if (data?.stats?.unreadMessages) {
+          setUnreadCount(data.stats.unreadMessages);
+        }
+      } catch (e) {
+        console.error('Failed to fetch unread count:', e);
       }
-    });
+    };
+    fetchUnreadCount();
   }, []);
   const handleLogout = () => {
     localStorage.removeItem('havenique_admin_token');

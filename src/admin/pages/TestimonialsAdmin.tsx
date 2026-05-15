@@ -8,28 +8,32 @@ export function TestimonialsAdmin() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    adminApi.getTestimonials().then((data) => {
-      setTestimonials(data);
-      setLoading(false);
-    });
+    const fetchTestimonials = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await adminApi.getTestimonials();
+        setTestimonials(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error('Failed to fetch testimonials:', e);
+        setError('Failed to load testimonials');
+        setTestimonials([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTestimonials();
   }, []);
   const handleStatusChange = async (id: number, newApproved: boolean) => {
     try {
       setSaving(true);
       setError(null);
-      const updatedTestimonial = testimonials.find((t) => t.id === id);
-      if (!updatedTestimonial) return;
-      await adminApi.updateTestimonial(id.toString(), {
+      const updated = await adminApi.updateTestimonial(id.toString(), {
         approved: newApproved
       });
       setTestimonials(
         testimonials.map((t) =>
-        t.id === id ?
-        {
-          ...t,
-          approved: newApproved
-        } :
-        t
+          t.id === id ? { ...updated } : t
         )
       );
     } catch (e) {
@@ -105,7 +109,7 @@ export function TestimonialsAdmin() {
       )}
 
       {loading ?
-      <div>Loading...</div> :
+      <div>Loading testimonials...</div> :
 
       <div
         style={{
@@ -139,83 +143,83 @@ export function TestimonialsAdmin() {
           }}>
           
                 <div>
-                  <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                marginBottom: '8px'
-              }}>
-              
-                    <strong
-                style={{
-                  fontSize: '16px'
-                }}>
-                
-                      {t.client_name || t.name}
-                    </strong>
-                    <span
-                style={{
-                  color: 'var(--admin-text-light)',
-                  fontSize: '14px'
-                }}>
-                
-                      {t.location}
-                    </span>
-                    <span
-                style={{
-                  color: 'var(--admin-gold)'
-                }}>
-                
-                      {'★'.repeat(t.rating)}
-                    </span>
-                  </div>
-                  <p
-              style={{
-                margin: '0 0 12px 0',
-                fontStyle: 'italic'
-              }}>
-              
-                    "{t.review || t.quote}"
-                  </p>
-                </div>
+                   <div
+               style={{
+                 display: 'flex',
+                 alignItems: 'center',
+                 gap: '12px',
+                 marginBottom: '8px'
+               }}>
+               
+                     <strong
+                 style={{
+                   fontSize: '16px'
+                 }}>
+                 
+                       {t.client_name || t.name}
+                     </strong>
+                     <span
+                 style={{
+                   color: 'var(--admin-text-light)',
+                   fontSize: '14px'
+                 }}>
+                 
+                       {t.location}
+                     </span>
+                     <span
+                 style={{
+                   color: 'var(--admin-gold)'
+                 }}>
+                 
+                       {'★'.repeat(t.rating)}
+                     </span>
+                   </div>
+                   <p
+               style={{
+                 margin: '0 0 12px 0',
+                 fontStyle: 'italic'
+               }}>
+               
+                     "{t.review || t.quote}"
+                   </p>
+                 </div>
 
-                <div
-            style={{
-              display: 'flex',
-              gap: '8px',
-              flexShrink: 0
-            }}>
-            
-                  {!t.approved ?
-            <button
-              onClick={() => handleStatusChange(t.id, true)}
-              disabled={saving}
-              className="admin-btn admin-btn-success admin-btn-sm"
-              title="Approve">
-              
-                      <CheckCircle size={16} /> Approve
-                    </button> :
+                 <div
+             style={{
+               display: 'flex',
+               gap: '8px',
+               flexShrink: 0
+             }}>
+             
+                   {!t.approved ?
+             <button
+               onClick={() => handleStatusChange(t.id, true)}
+               disabled={saving}
+               className="admin-btn admin-btn-success admin-btn-sm"
+               title="Approve">
+               
+                       <CheckCircle size={16} /> Approve
+                     </button> :
 
-            <button
-              onClick={() => handleStatusChange(t.id, false)}
-              disabled={saving}
-              className="admin-btn admin-btn-secondary admin-btn-sm"
-              title="Unapprove">
-              
-                      <XCircle size={16} /> Unapprove
-                    </button>
-            }
-                  <button
-              onClick={() => handleDelete(t.id)}
-              disabled={saving}
-              className="admin-btn admin-btn-danger admin-btn-sm"
-              title="Delete">
-              
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
+             <button
+               onClick={() => handleStatusChange(t.id, false)}
+               disabled={saving}
+               className="admin-btn admin-btn-secondary admin-btn-sm"
+               title="Unapprove">
+               
+                       <XCircle size={16} /> Unapprove
+                     </button>
+             }
+                   <button
+               onClick={() => handleDelete(t.id)}
+               disabled={saving}
+               className="admin-btn admin-btn-danger admin-btn-sm"
+               title="Delete">
+               
+                     <Trash2 size={16} />
+                   </button>
+                 </div>
+               </div>
         )
         }
         </div>

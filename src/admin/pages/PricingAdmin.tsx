@@ -10,10 +10,21 @@ export function PricingAdmin() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    adminApi.getPricing().then((data) => {
-      setPlans(data);
-      setLoading(false);
-    });
+    const fetchPlans = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await adminApi.getPricing();
+        setPlans(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error('Failed to fetch pricing:', e);
+        setError('Failed to load pricing plans');
+        setPlans([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPlans();
   }, []);
   const handleEdit = (plan: any) => {
     setEditingPlan({
@@ -121,6 +132,19 @@ export function PricingAdmin() {
 
       {loading ?
       <div>Loading...</div> :
+
+      error ? (
+        <div style={{
+          backgroundColor: '#fee',
+          color: '#c33',
+          padding: '12px 16px',
+          borderRadius: '6px',
+          marginBottom: '16px',
+          borderLeft: '4px solid #c33'
+        }}>
+          {error}
+        </div>
+      ) :
 
       <DataTable
         columns={columns}

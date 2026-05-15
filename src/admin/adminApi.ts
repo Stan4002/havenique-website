@@ -253,8 +253,10 @@ export const adminApi = {
 
   getServices: async () => {
     try {
-      return await authFetch(`${API_BASE}/admin/services`);
+      const data = await authFetch(`${API_BASE}/admin/services`);
+      return Array.isArray(data) ? data : data?.data || data?.services || fallbackServices;
     } catch (e) {
+      console.error('Failed to fetch services:', e);
       return fallbackServices;
     }
   },
@@ -278,8 +280,10 @@ export const adminApi = {
 
   getStaff: async () => {
     try {
-      return await authFetch(`${API_BASE}/admin/staff`);
+      const data = await authFetch(`${API_BASE}/admin/staff`);
+      return Array.isArray(data) ? data : data?.data || data?.staff || fallbackStaff;
     } catch (e) {
+      console.error('Failed to fetch staff:', e);
       return fallbackStaff;
     }
   },
@@ -301,8 +305,10 @@ export const adminApi = {
 
   getPricing: async () => {
     try {
-      return await authFetch(`${API_BASE}/admin/pricing`);
+      const data = await authFetch(`${API_BASE}/admin/pricing`);
+      return Array.isArray(data) ? data : data?.data || data?.pricing || [];
     } catch (e) {
+      console.error('Failed to fetch pricing:', e);
       return [];
     }
   },
@@ -324,8 +330,10 @@ export const adminApi = {
 
   getBlogPosts: async () => {
     try {
-      return await authFetch(`${API_BASE}/admin/blog`);
+      const data = await authFetch(`${API_BASE}/admin/blog`);
+      return Array.isArray(data) ? data : data?.data || data?.posts || fallbackBlogPosts;
     } catch (e) {
+      console.error('Failed to fetch blog posts:', e);
       return fallbackBlogPosts;
     }
   },
@@ -347,8 +355,10 @@ export const adminApi = {
 
   getFaq: async () => {
     try {
-      return await authFetch(`${API_BASE}/admin/faq`);
+      const data = await authFetch(`${API_BASE}/admin/faq`);
+      return Array.isArray(data) ? data : data?.data || data?.faqs || [];
     } catch (e) {
+      console.error('Failed to fetch FAQs:', e);
       return [];
     }
   },
@@ -370,8 +380,10 @@ export const adminApi = {
 
   getTestimonials: async () => {
     try {
-      return await authFetch(`${API_BASE}/admin/testimonials`);
+      const data = await authFetch(`${API_BASE}/admin/testimonials`);
+      return Array.isArray(data) ? data : data?.data || data?.testimonials || fallbackTestimonials;
     } catch (e) {
+      console.error('Failed to fetch testimonials:', e);
       return fallbackTestimonials;
     }
   },
@@ -412,6 +424,9 @@ export const adminApi = {
       body: formData
     });
     if (!response.ok) throw new Error('Upload failed');
-    return response.json();
+    const data = await response.json();
+    return {
+      url: data.url || data.imageUrl || data.path || data.secure_url || ''
+    };
   }
 };

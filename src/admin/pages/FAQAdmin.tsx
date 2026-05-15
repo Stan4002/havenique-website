@@ -10,10 +10,21 @@ export function FAQAdmin() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    adminApi.getFaq().then((data) => {
-      setFaqs(data);
-      setLoading(false);
-    });
+    const fetchFaqs = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await adminApi.getFaq();
+        setFaqs(Array.isArray(data) ? data.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0)) : []);
+      } catch (e) {
+        console.error('Failed to fetch FAQs:', e);
+        setError('Failed to load FAQs');
+        setFaqs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFaqs();
   }, []);
   const handleEdit = (faq: any) => {
     setEditingFaq({
@@ -88,6 +99,19 @@ export function FAQAdmin() {
 
       {loading ?
       <div>Loading...</div> :
+
+      error ? (
+        <div style={{
+          backgroundColor: '#fee',
+          color: '#c33',
+          padding: '12px 16px',
+          borderRadius: '6px',
+          marginBottom: '16px',
+          borderLeft: '4px solid #c33'
+        }}>
+          {error}
+        </div>
+      ) :
 
       <DataTable
         columns={columns}

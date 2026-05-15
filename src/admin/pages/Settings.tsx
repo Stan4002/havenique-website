@@ -7,10 +7,18 @@ export function Settings() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   useEffect(() => {
-    adminApi.getSettings().then((data) => {
-      setSettings(data);
-      setLoading(false);
-    });
+    const fetchSettings = async () => {
+      try {
+        setLoading(true);
+        const data = await adminApi.getSettings();
+        setSettings(data || {});
+      } catch (e) {
+        console.error('Failed to fetch settings:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSettings();
   }, []);
   const handleChange = (
   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>

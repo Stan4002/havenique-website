@@ -6,10 +6,18 @@ export function AboutAdmin() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   useEffect(() => {
-    adminApi.getAbout().then((data) => {
-      setAbout(data);
-      setLoading(false);
-    });
+    const fetchAbout = async () => {
+      try {
+        setLoading(true);
+        const data = await adminApi.getAbout();
+        setAbout(data || {});
+      } catch (e) {
+        console.error('Failed to fetch about page:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAbout();
   }, []);
   const handleChange = (
   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
