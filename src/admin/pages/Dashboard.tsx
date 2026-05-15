@@ -23,24 +23,23 @@ export function Dashboard() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [services, staff, blog, messages] = await Promise.all([
-          adminApi.getServices().catch(() => []),
-          adminApi.getStaff().catch(() => []),
-          adminApi.getBlogPosts().catch(() => []),
-          adminApi.getInbox().catch(() => [])
-        ]);
-
-        const unreadCount = messages.filter((m: any) => !m.read).length;
-
+        const data = await adminApi.getDashboard();
         setStats({
-          totalServices: services.length,
-          totalStaff: staff.length,
-          blogPosts: blog.length,
-          unreadMessages: unreadCount
+          totalServices: data.stats?.services || 0,
+          totalStaff: data.stats?.staff || 0,
+          blogPosts: data.stats?.blog_posts || 0,
+          unreadMessages: data.stats?.unread_messages || 0
         });
-        setRecentMessages(messages.slice(0, 5));
+        setRecentMessages(Array.isArray(data.recent_submissions) ? data.recent_submissions.slice(0, 5) : []);
       } catch (e) {
         console.error('Failed to fetch dashboard data:', e);
+        setStats({
+          totalServices: 0,
+          totalStaff: 0,
+          blogPosts: 0,
+          unreadMessages: 0
+        });
+        setRecentMessages([]);
       } finally {
         setLoading(false);
       }
