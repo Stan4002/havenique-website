@@ -160,6 +160,18 @@
   font-size: 18px;
   color: var(--admin-blue-dark);
 }
+/* Loading Spinner */
+@keyframes admin-spin {
+  to { transform: rotate(360deg); }
+}
+.admin-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e2e8f0;
+  border-top-color: var(--admin-primary);
+  border-radius: 50%;
+  animation: admin-spin 0.8s linear infinite;
+}
 /* Stats Grid */
 .admin-stats-grid {
   display: grid;

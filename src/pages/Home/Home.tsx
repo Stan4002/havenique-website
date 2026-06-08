@@ -46,6 +46,8 @@ const getInitials = (name: string) => {
   toUpperCase();
 };
 export function Home() {
+  const [heroImgFailed, setHeroImgFailed] = React.useState(false);
+  const [aboutImgFailed, setAboutImgFailed] = React.useState(false);
   const { data: settings, loading: settingsLoading } = useApi(api.getSettings);
   const { data: services, loading: servicesLoading } = useApi(api.getServices);
   const { data: about, loading: aboutLoading } = useApi(api.getAbout);
@@ -84,9 +86,23 @@ export function Home() {
             </div>
           </div>
           <div className="hero-image-wrap">
-            <div className="placeholder-img">
-              <HeartPulse size={80} opacity={0.8} />
-            </div>
+            {heroImgFailed ? (
+              <div className="placeholder-img">
+                <HeartPulse size={80} opacity={0.8} />
+              </div>
+            ) : (
+              <img
+                src="https://zviwalgwskidehamfkcz.supabase.co/storage/v1/object/public/havenique-media/WhatsApp%20Image%202026-05-09%20at%2004.16.16.jpeg"
+                alt="Havenique nursing care"
+                onError={() => setHeroImgFailed(true)}
+                style={{
+                  objectFit: 'cover',
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: 'var(--radius-md)'
+                }}
+              />
+            )}
           </div>
         </div>
 
@@ -183,14 +199,28 @@ export function Home() {
         <div
           className={`container about-snippet-grid fade-in-section ${aboutVisible ? 'is-visible' : ''}`}>
           
-          <div
-            className="placeholder-img"
-            style={{
-              minHeight: '400px'
-            }}>
-            
-            <Users size={80} opacity={0.8} />
-          </div>
+          {aboutImgFailed ? (
+            <div
+              className="placeholder-img"
+              style={{
+                minHeight: '400px'
+              }}>
+              <Users size={80} opacity={0.8} />
+            </div>
+          ) : (
+            <img
+              src="https://zviwalgwskidehamfkcz.supabase.co/storage/v1/object/public/havenique-media/WhatsApp%20Image%202026-05-09%20at%2004.16.17.jpeg"
+              alt="Who we are"
+              onError={() => setAboutImgFailed(true)}
+              style={{
+                objectFit: 'cover',
+                width: '100%',
+                height: '100%',
+                minHeight: '400px',
+                borderRadius: 'var(--radius-md)'
+              }}
+            />
+          )}
           <div className="about-snippet-content">
             <h2>Who We Are</h2>
             {aboutLoading ?
