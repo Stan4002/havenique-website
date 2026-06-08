@@ -17,6 +17,7 @@ import { useIntersection } from '../../hooks/useIntersection';
 import { api } from '../../api/api';
 import './About.css';
 export function About() {
+  const [storyImgFailed, setStoryImgFailed] = React.useState(false);
   const { data: about, loading } = useApi(api.getAbout);
   const { elementRef: storyRef, isVisible: storyVisible } = useIntersection();
   const { elementRef: valuesRef, isVisible: valuesVisible } = useIntersection();
@@ -46,14 +47,28 @@ export function About() {
         <div
           className={`container story-grid fade-in-section ${storyVisible ? 'is-visible' : ''}`}>
           
-          <div
-            className="placeholder-img"
-            style={{
-              minHeight: '500px'
-            }}>
-            
-            <Heart size={80} opacity={0.8} />
-          </div>
+          {storyImgFailed ? (
+            <div
+              className="placeholder-img"
+              style={{
+                minHeight: '500px'
+              }}>
+              <Heart size={80} opacity={0.8} />
+            </div>
+          ) : (
+            <img
+              src="https://zviwalgwskidehamfkcz.supabase.co/storage/v1/object/public/havenique-media/WhatsApp%20Image%202026-05-09%20at%2004.16.18.jpeg"
+              alt="Our story"
+              onError={() => setStoryImgFailed(true)}
+              style={{
+                objectFit: 'cover',
+                width: '100%',
+                height: '100%',
+                minHeight: '500px',
+                borderRadius: 'var(--radius-md)'
+              }}
+            />
+          )}
           <div className="story-content">
             <h2>Our Story</h2>
             {loading ?

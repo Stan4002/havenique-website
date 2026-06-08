@@ -67,14 +67,20 @@ export function Dashboard() {
     render: (val: boolean) =>
     <span
       className={`admin-status ${val ? 'admin-status-neutral' : 'admin-status-danger'}`}>
-      
-          {val ? 'Read' : 'New'}
+
+          {val ? 'Read' : 'Unread'}
         </span>
 
   }];
 
   return (
     <div>
+      {loading && (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}>
+          <div className="admin-spinner" />
+        </div>
+      )}
+      {!loading && (<>
       <div
         style={{
           display: 'flex',
@@ -150,6 +156,7 @@ export function Dashboard() {
         </div>
         <DataTable columns={messageColumns} data={recentMessages} />
       </div>
+      </>)}
     </div>);
 
 }
